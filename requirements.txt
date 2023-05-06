@@ -12,3 +12,4 @@ bs4==0.0.1
 unstructured==0.6.2
 libmagic==1.0
 tiktoken==0.3.3
+pypdf==3.8.1

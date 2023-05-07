@@ -1,17 +1,17 @@
 """Main entrypoint for the app."""
 import logging
-import pickle
-from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.templating import Jinja2Templates
-from langchain.vectorstores import VectorStore
+from langchain.vectorstores import Chroma, VectorStore
+from langchain.embeddings import OpenAIEmbeddings
 
 from callback import QuestionGenCallbackHandler, StreamingLLMCallbackHandler
 from query_data import get_chain
 from schemas import ChatResponse
-from ingest import ingest_docs, fetch_latest_report
+from ingest import fetch_all_reports
+from chromaclient import client
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -20,21 +20,15 @@ vectorstore: Optional[VectorStore] = None
 
 @app.on_event("startup")
 async def startup_event():
-    logging.info("fetching the latest report")
-    report_path = fetch_latest_report()
-    if report_path:
-        report_name = report_path.split("/")[-1]
-        logging.info("loading vectorstore")
-        if not Path(f"{report_name}.pkl").exists():
-            ingest_docs(report_path)
-
-        try:
-          with open(f"{report_name}.pkl", "rb") as f:
-              global vectorstore
-              vectorstore = pickle.load(f)
-              logging.info("loaded vectorstore")
-        except:
-            raise ValueError(f"{report_name}.pkl doesn't seem to load")
+    logging.info("fetching the reports")
+    fetch_all_reports()
+    embeddings = OpenAIEmbeddings()
+    global vectorstore
+    try:
+        vectorstore = Chroma(collection_name="fomcpresconf", client=client, embedding_function=embeddings)
+        logging.info("loaded vectorstore")
+    except:
+        raise ValueError(f"vectorstore doesn't seem to load")
 
 
 @app.get("/")

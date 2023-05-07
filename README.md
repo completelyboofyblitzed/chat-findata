@@ -35,7 +35,8 @@ Question-Answering has the following steps, all handled by [ChatVectorDBChain](h
    - [ ].docx ?
    - [ ].txt ?
 - [ ] Add support for other LLM models
+- [ ] Move a vectorstore (chromadb?) to a client/server mode (this offers better performance and scalability than the in-memory mode)
 - [ ] Implement analysis in time
-   - [ ] analize data structured in time 
+   - [x] create data structure using time as namespaces?
    - [ ] show graphs 
    - [ ] allign with graphs

@@ -132,9 +132,7 @@ dmypy.json
 .idea
 
 
-
 .DS_Store
 
 *.pkl
 vectorstore
-db

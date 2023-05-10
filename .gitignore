@@ -131,7 +131,7 @@ dmypy.json
 # JetBrains
 .idea
 
-*.db
+
 
 .DS_Store
 
